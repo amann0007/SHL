@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHL Assessment Advisor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --shl-red: #C8102E;
+    --shl-red-deep: #9A0B22;
+    --shl-red-muted: #F5E8EA;
+    --ink: #1A1A2E;
+    --ink-60: #5A5A72;
+    --ink-30: #B8B8C4;
+    --ink-10: #F0F0F4;
+    --white: #FFFFFF;
+    --surface: #FAFAFA;
+    --card-border: rgba(26,26,46,0.09);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+    --shadow-lg: 0 16px 40px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.06);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --radius-xs: 6px;
+    --type-badge-A: #E8F4FD; --type-badge-A-text: #1565A8;
+    --type-badge-B: #FDF5E8; --type-badge-B-text: #B06A00;
+    --type-badge-C: #EDF8ED; --type-badge-C-text: #1B7A1B;
+    --type-badge-D: #F5E8FD; --type-badge-D-text: #7B1FA2;
+    --type-badge-E: #FDE8F0; --type-badge-E-text: #C62A5F;
+    --type-badge-K: #E8F0FD; --type-badge-K-text: #1A3DAD;
+    --type-badge-P: #FDF0E8; --type-badge-P-text: #B54A00;
+    --type-badge-S: #E8FDFB; --type-badge-S-text: #00796B;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--white);
+    border-bottom: 1px solid var(--card-border);
+    padding: 0 2rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo-mark {
+    width: 32px;
+    height: 32px;
+    background: var(--shl-red);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-mark svg { width: 18px; height: 18px; fill: white; }
+  .logo-text { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--ink); letter-spacing: -0.3px; }
+  .logo-text span { color: var(--shl-red); }
+  header .tag { margin-left: auto; font-size: 11px; font-weight: 500; color: var(--ink-60); background: var(--ink-10); padding: 4px 10px; border-radius: 20px; letter-spacing: 0.3px; text-transform: uppercase; }
+
+  /* ── Layout ── */
+  .layout {
+    display: flex;
+    flex: 1;
+    max-width: 1280px;
+    margin: 0 auto;
+    width: 100%;
+    gap: 0;
+  }
+
+  /* ── Chat panel ── */
+  .chat-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 60px);
+    max-width: 680px;
+    border-right: 1px solid var(--card-border);
+  }
+
+  .messages {
+    flex: 1;
+    padding: 2rem 2rem 1rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  /* ── Welcome state ── */
+  .welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+    flex: 1;
+  }
+  .welcome-icon {
+    width: 64px;
+    height: 64px;
+    background: var(--shl-red-muted);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+  .welcome-icon svg { width: 28px; height: 28px; fill: var(--shl-red); }
+  .welcome h2 { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--ink); margin-bottom: 0.75rem; font-weight: 400; }
+  .welcome p { font-size: 15px; color: var(--ink-60); line-height: 1.6; max-width: 380px; }
+  .starter-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 1.5rem; }
+  .chip {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ink);
+    background: var(--white);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    line-height: 1.3;
+    text-align: left;
+  }
+  .chip:hover { border-color: var(--shl-red); color: var(--shl-red); background: var(--shl-red-muted); }
+
+  /* ── Message bubbles ── */
+  .msg { display: flex; gap: 10px; align-items: flex-start; animation: fadeUp 0.25s ease; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .msg.user { flex-direction: row-reverse; }
+
+  .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .avatar.bot { background: var(--shl-red); color: white; }
+  .avatar.bot svg { width: 16px; height: 16px; fill: white; }
+  .avatar.user { background: var(--ink); color: white; font-size: 11px; }
+
+  .bubble {
+    max-width: 85%;
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    line-height: 1.65;
+    box-shadow: var(--shadow-sm);
+  }
+  .msg.bot .bubble { background: var(--white); border: 1px solid var(--card-border); border-radius: 4px 12px 12px 12px; color: var(--ink); }
+  .msg.user .bubble { background: var(--ink); color: var(--white); border-radius: 12px 4px 12px 12px; }
+
+  .typing-dots { display: flex; gap: 4px; align-items: center; padding: 4px 0; }
+  .typing-dots span { width: 6px; height: 6px; background: var(--ink-30); border-radius: 50%; animation: bounce 1.2s infinite; }
+  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
+
+  /* ── Input area ── */
+  .input-area {
+    padding: 1rem 2rem 1.5rem;
+    background: var(--white);
+    border-top: 1px solid var(--card-border);
+  }
+  .input-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    background: var(--surface);
+    border: 1.5px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    transition: border-color 0.15s;
+  }
+  .input-row:focus-within { border-color: var(--shl-red); }
+  .input-row textarea {
+    flex: 1;
+    border: none;
+    background: transparent;
+    resize: none;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--ink);
+    outline: none;
+    min-height: 22px;
+    max-height: 120px;
+    line-height: 1.5;
+  }
+  .input-row textarea::placeholder { color: var(--ink-30); }
+  .send-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    background: var(--shl-red);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .send-btn:hover { background: var(--shl-red-deep); }
+  .send-btn:disabled { background: var(--ink-30); cursor: not-allowed; }
+  .send-btn svg { width: 16px; height: 16px; fill: white; }
+  .input-hint { font-size: 11px; color: var(--ink-30); margin-top: 8px; text-align: center; }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 400px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 1.5rem;
+    gap: 1rem;
+    overflow-y: auto;
+    max-height: calc(100vh - 60px);
+    position: sticky;
+    top: 60px;
+    align-self: flex-start;
+  }
+
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0.25rem;
+  }
+  .sidebar-header h3 { font-size: 13px; font-weight: 600; color: var(--ink-60); text-transform: uppercase; letter-spacing: 0.5px; }
+  .rec-count {
+    min-width: 22px;
+    height: 22px;
+    background: var(--shl-red);
+    color: white;
+    border-radius: 11px;
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 6px;
+  }
+
+  .empty-sidebar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem 1rem;
+    text-align: center;
+    gap: 12px;
+  }
+  .empty-sidebar svg { width: 40px; height: 40px; fill: var(--ink-30); }
+  .empty-sidebar p { font-size: 13px; color: var(--ink-30); line-height: 1.5; max-width: 200px; }
+
+  /* ── Assessment card ── */
+  .rec-card {
+    background: var(--white);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.15s;
+    animation: fadeUp 0.3s ease;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+  }
+  .rec-card:hover { box-shadow: var(--shadow-md); border-color: rgba(200,16,46,0.3); transform: translateY(-1px); }
+  .rec-card-top { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+  .rec-card-name { font-size: 13px; font-weight: 600; color: var(--ink); line-height: 1.4; flex: 1; }
+  .type-badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+  .rec-card-desc { font-size: 12px; color: var(--ink-60); line-height: 1.5; margin-bottom: 10px; }
+  .rec-card-meta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .meta-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--ink-60); }
+  .meta-item svg { width: 12px; height: 12px; fill: var(--ink-30); flex-shrink: 0; }
+  .rec-card-link { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--shl-red); font-weight: 500; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--ink-10); text-decoration: none; }
+  .rec-card-link svg { width: 10px; height: 10px; fill: var(--shl-red); }
+
+  /* ── Legend ── */
+  .legend { background: var(--white); border: 1px solid var(--card-border); border-radius: var(--radius-sm); padding: 12px 14px; }
+  .legend-title { font-size: 11px; font-weight: 600; color: var(--ink-60); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 10px; }
+  .legend-items { display: flex; flex-direction: column; gap: 6px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; }
+  .legend-dot { width: 20px; height: 20px; border-radius: 10px; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .legend-label { font-size: 12px; color: var(--ink-60); }
+
+  .turn-counter { font-size: 11px; color: var(--ink-30); text-align: center; margin-top: 4px; }
+  .turn-counter.warn { color: #B54A00; }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .chat-panel { border-right: none; max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">
+    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+  </div>
+  <span class="logo-text">SHL <span>Advisor</span></span>
+  <span class="tag">Assessment Selector</span>
+</header>
+
+<div class="layout">
+  <!-- Chat panel -->
+  <div class="chat-panel">
+    <div class="messages" id="messages">
+      <div class="welcome" id="welcome">
+        <div class="welcome-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M7.5 13A2.5 2.5 0 0 0 5 15.5 2.5 2.5 0 0 0 7.5 18a2.5 2.5 0 0 0 2.5-2.5A2.5 2.5 0 0 0 7.5 13m9 0a2.5 2.5 0 0 0-2.5 2.5 2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5A2.5 2.5 0 0 0 16.5 13z"/></svg>
+        </div>
+        <h2>Find the right assessment</h2>
+        <p>Tell me about the role you're hiring for and I'll recommend the best SHL assessments from the official catalog.</p>
+        <div class="starter-chips">
+          <span class="chip" onclick="sendChip(this)">I need assessments for a software engineer role</span>
+          <span class="chip" onclick="sendChip(this)">Looking for leadership assessments for managers</span>
+          <span class="chip" onclick="sendChip(this)">Entry-level sales candidate screening</span>
+          <span class="chip" onclick="sendChip(this)">Data scientist hiring — mid-level</span>
+        </div>
+      </div>
+    </div>
+    <div class="input-area">
+      <div class="input-row">
+        <textarea
+          id="userInput"
+          placeholder="Describe the role or what you're looking for…"
+          rows="1"
+          onkeydown="handleKey(event)"
+          oninput="autoResize(this)"
+        ></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send">
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+      <div class="input-hint" id="turnHint">Up to 8 turns per session</div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h3>Recommended</h3>
+      <div class="rec-count" id="recCount" style="display:none">0</div>
+    </div>
+    <div id="recList">
+      <div class="empty-sidebar">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+        <p>Recommendations will appear here as we chat</p>
+      </div>
+    </div>
+    <div class="legend" id="legend" style="display:none">
+      <div class="legend-title">Assessment types</div>
+      <div class="legend-items" id="legendItems"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const TYPE_INFO = {
+  A: { label: 'Ability & Aptitude', bg: '#E8F4FD', color: '#1565A8' },
+  B: { label: 'Situational Judgment', bg: '#FDF5E8', color: '#B06A00' },
+  C: { label: 'Competencies', bg: '#EDF8ED', color: '#1B7A1B' },
+  D: { label: 'Development & 360', bg: '#F5E8FD', color: '#7B1FA2' },
+  E: { label: 'Assessment Exercises', bg: '#FDE8F0', color: '#C62A5F' },
+  K: { label: 'Knowledge & Skills', bg: '#E8F0FD', color: '#1A3DAD' },
+  P: { label: 'Personality & Behavior', bg: '#FDF0E8', color: '#B54A00' },
+  S: { label: 'Simulations', bg: '#E8FDFB', color: '#00796B' },
+};
+
+let messages = [];
+let userTurns = 0;
+let currentRecs = [];
+let typesInUse = new Set();
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function sendChip(el) {
+  const text = el.textContent.trim();
+  document.getElementById('userInput').value = text;
+  sendMessage();
+}
+
+async function sendMessage() {
+  const input = document.getElementById('userInput');
+  const text = input.value.trim();
+  if (!text || document.getElementById('sendBtn').disabled) return;
+
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.remove();
+
+  userTurns++;
+  updateTurnHint();
+
+  messages.push({ role: 'user', content: text });
+  appendMessage('user', text);
+  input.value = '';
+  input.style.height = 'auto';
+
+  const sendBtn = document.getElementById('sendBtn');
+  sendBtn.disabled = true;
+
+  const typingId = appendTyping();
+
+  try {
+    const API_BASE = window.SHL_API_BASE || 'http://localhost:8001';
+    const res = await fetch(`${API_BASE}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages })
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    removeTyping(typingId);
+    appendMessage('bot', data.reply);
+    messages.push({ role: 'assistant', content: data.reply });
+
+    if (data.recommendations && data.recommendations.length > 0) {
+      updateRecommendations(data.recommendations);
+    }
+
+    if (data.end_of_conversation) {
+      appendEndMessage();
+    }
+  } catch (err) {
+    removeTyping(typingId);
+    appendMessage('bot', `Sorry, I couldn't reach the server. Make sure the SHL Agent API is running at the configured endpoint.\n\nError: ${err.message}`);
+  } finally {
+    sendBtn.disabled = (userTurns >= 8);
+  }
+}
+
+function appendMessage(role, text) {
+  const container = document.getElementById('messages');
+  const msg = document.createElement('div');
+  msg.className = `msg ${role}`;
+
+  const avatar = document.createElement('div');
+  avatar.className = `avatar ${role}`;
+
+  if (role === 'bot') {
+    avatar.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M7.5 13A2.5 2.5 0 0 0 5 15.5 2.5 2.5 0 0 0 7.5 18a2.5 2.5 0 0 0 2.5-2.5A2.5 2.5 0 0 0 7.5 13m9 0a2.5 2.5 0 0 0-2.5 2.5 2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5A2.5 2.5 0 0 0 16.5 13z"/></svg>`;
+  } else {
+    avatar.textContent = 'You';
+  }
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.textContent = text;
+
+  msg.appendChild(avatar);
+  msg.appendChild(bubble);
+  container.appendChild(msg);
+  container.scrollTop = container.scrollHeight;
+  return msg;
+}
+
+function appendTyping() {
+  const container = document.getElementById('messages');
+  const id = 'typing-' + Date.now();
+  const msg = document.createElement('div');
+  msg.className = 'msg bot';
+  msg.id = id;
+
+  const avatar = document.createElement('div');
+  avatar.className = 'avatar bot';
+  avatar.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M7.5 13A2.5 2.5 0 0 0 5 15.5 2.5 2.5 0 0 0 7.5 18a2.5 2.5 0 0 0 2.5-2.5A2.5 2.5 0 0 0 7.5 13m9 0a2.5 2.5 0 0 0-2.5 2.5 2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5A2.5 2.5 0 0 0 16.5 13z"/></svg>`;
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.innerHTML = `<div class="typing-dots"><span></span><span></span><span></span></div>`;
+
+  msg.appendChild(avatar);
+  msg.appendChild(bubble);
+  container.appendChild(msg);
+  container.scrollTop = container.scrollHeight;
+  return id;
+}
+
+function removeTyping(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+function appendEndMessage() {
+  const container = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.style.cssText = 'text-align:center;font-size:12px;color:var(--ink-30);padding:8px 0;';
+  div.textContent = '— Session complete —';
+  container.appendChild(div);
+}
+
+function updateRecommendations(recs) {
+  currentRecs = recs;
+  const list = document.getElementById('recList');
+  list.innerHTML = '';
+
+  const countEl = document.getElementById('recCount');
+  countEl.textContent = recs.length;
+  countEl.style.display = 'flex';
+
+  typesInUse.clear();
+
+  recs.forEach(rec => {
+    typesInUse.add(rec.test_type);
+    const info = TYPE_INFO[rec.test_type] || { label: 'Assessment', bg: '#F0F0F4', color: '#5A5A72' };
+
+    const card = document.createElement('a');
+    card.href = rec.url;
+    card.target = '_blank';
+    card.rel = 'noopener noreferrer';
+    card.className = 'rec-card';
+
+    card.innerHTML = `
+      <div class="rec-card-top">
+        <div class="rec-card-name">${escHtml(rec.name)}</div>
+        <span class="type-badge" style="background:${info.bg};color:${info.color}">${rec.test_type}</span>
+      </div>
+      <div class="rec-card-meta">
+        <span class="meta-item">
+          <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          ${escHtml(info.label)}
+        </span>
+      </div>
+      <div class="rec-card-link">
+        View on SHL catalog
+        <svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+      </div>
+    `;
+
+    list.appendChild(card);
+  });
+
+  updateLegend();
+}
+
+function updateLegend() {
+  const legend = document.getElementById('legend');
+  const items = document.getElementById('legendItems');
+  items.innerHTML = '';
+
+  typesInUse.forEach(code => {
+    const info = TYPE_INFO[code];
+    if (!info) return;
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = `
+      <div class="legend-dot" style="background:${info.bg};color:${info.color}">${code}</div>
+      <span class="legend-label">${info.label}</span>
+    `;
+    items.appendChild(item);
+  });
+
+  legend.style.display = typesInUse.size > 0 ? 'block' : 'none';
+}
+
+function updateTurnHint() {
+  const hint = document.getElementById('turnHint');
+  const remaining = 8 - userTurns;
+  if (remaining <= 2) {
+    hint.textContent = `${remaining} turn${remaining !== 1 ? 's' : ''} remaining`;
+    hint.className = 'input-hint turn-counter warn';
+  } else {
+    hint.textContent = `${remaining} of 8 turns remaining`;
+    hint.className = 'input-hint turn-counter';
+  }
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Configure API base URL via query param or window variable
+const params = new URLSearchParams(window.location.search);
+if (params.get('api')) window.SHL_API_BASE = params.get('api');
+</script>
+</body>
+</html>
