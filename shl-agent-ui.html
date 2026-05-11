@@ -448,7 +448,7 @@ async function sendMessage() {
   const typingId = appendTyping();
 
   try {
-    const API_BASE = window.SHL_API_BASE || 'http://localhost:8001';
+    const API_BASE = window.SHL_API_BASE || 'https://shl-api-ckzb.onrender.com';
     const res = await fetch(`${API_BASE}/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
